@@ -191,6 +191,7 @@
 	sync_hivemind_abilities()
 	add_pass_flags(manifest_pass_flags, MANIFESTED_TRAIT)
 	hive.xenos_by_upgrade[upgrade] += src
+	set_jump_component()
 	update_wounds()
 	update_icon()
 	update_action_buttons()
@@ -210,6 +211,7 @@
 	sync_hivemind_abilities()
 	remove_pass_flags(manifest_pass_flags, MANIFESTED_TRAIT)
 	hive.xenos_by_upgrade[upgrade] += src
+	set_jump_component()
 	update_wounds()
 	update_icon()
 	update_action_buttons()
@@ -229,6 +231,7 @@
 		set_datum(FALSE)
 		sync_hivemind_abilities()
 		hive.xenos_by_upgrade[upgrade] += src
+		set_jump_component()
 		update_wounds()
 		update_icon()
 		update_action_buttons()
@@ -243,6 +246,7 @@
 	set_datum(FALSE)
 	sync_hivemind_abilities()
 	hive.xenos_by_upgrade[upgrade] += src
+	set_jump_component()
 	update_wounds()
 	update_icon()
 	update_action_buttons()

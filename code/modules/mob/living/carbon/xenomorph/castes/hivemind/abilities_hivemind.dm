@@ -8,16 +8,16 @@
 	)
 	use_state_flags = ABILITY_USE_SOLIDOBJECT
 
+/datum/action/ability/xeno_action/return_to_core/action_activate()
+	var/mob/living/carbon/xenomorph/hivemind/hivemind = xeno_owner
+	hivemind.return_to_core()
+
 /datum/action/ability/activable/xeno/secrete_resin/hivemind/can_use_action(silent, override_flags, selecting)
 	. = ..()
 	if(!.)
 		return
 	if(owner.status_flags & INCORPOREAL)
 		return FALSE
-
-/datum/action/ability/xeno_action/return_to_core/action_activate()
-	var/mob/living/carbon/xenomorph/hivemind/hivemind = xeno_owner
-	hivemind.return_to_core()
 
 /datum/action/ability/xeno_action/change_form
 	name = "Change form"
