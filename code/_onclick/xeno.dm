@@ -59,6 +59,8 @@
 /mob/living/carbon/xenomorph/hivemind/UnarmedAttack(atom/A, has_proximity, modifiers)
 	if(HAS_TRAIT(src, TRAIT_HANDS_BLOCKED))
 		return
+	if(upgrade == XENO_UPGRADE_HIVEMIND_COMBAT)
+		return ..()
 	A.attack_hivemind(src)
 
 /atom/proc/attack_hivemind(mob/living/carbon/xenomorph/hivemind/attacker)

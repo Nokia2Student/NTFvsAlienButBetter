@@ -5,16 +5,16 @@
 	desc = "Teleport back to your core."
 	use_state_flags = ABILITY_USE_SOLIDOBJECT
 
-/datum/action/ability/xeno_action/return_to_core/action_activate()
-	SEND_SIGNAL(owner, COMSIG_XENOMORPH_CORE_RETURN)
-	return ..()
-
 /datum/action/ability/activable/xeno/secrete_resin/hivemind/can_use_action(silent, override_flags, selecting)
 	. = ..()
 	if(!.)
 		return
 	if (owner.status_flags & INCORPOREAL)
 		return FALSE
+
+/datum/action/ability/xeno_action/return_to_core/action_activate()
+	. = ..()
+	SEND_SIGNAL(owner, COMSIG_XENOMORPH_CORE_RETURN)
 
 /datum/action/ability/xeno_action/change_form
 	name = "Change form"
@@ -26,8 +26,37 @@
 	)
 	use_state_flags = ABILITY_USE_SOLIDOBJECT
 
+/datum/action/ability/xeno_action/change_form/can_use_action(silent, override_flags, selecting)
+	. = ..()
+	if(!.)
+		return FALSE
+
 /datum/action/ability/xeno_action/change_form/action_activate()
+	. = ..()
+	if(xeno_owner.do_actions)
+		return FALSE
 	xeno_owner.change_form()
+
+/datum/action/ability/xeno_action/manifest_combat
+	name = "Manifest combat form"
+	action_icon_state = "manifest"
+	action_icon = 'icons/Xeno/actions/hivemind.dmi'
+	desc = "Toggle between support and combat manifestation. This process takes time and alerts nearby enemies."
+	keybinding_signals = list(
+		KEYBINDING_NORMAL = COMSIG_XENOMORPH_HIVEMIND_MANIFEST_COMBAT,
+	)
+	cooldown_duration = 30 SECONDS
+	use_state_flags = ABILITY_USE_SOLIDOBJECT|ABILITY_USE_BUSY
+
+/datum/action/ability/xeno_action/manifest_combat/can_use_action(silent, override_flags, selecting)
+	. = ..()
+	if(TIMER_COOLDOWN_RUNNING(xeno_owner, COOLDOWN_HIVEMIND_MANIFESTATION_COMBAT))
+		if(!silent)
+			xeno_owner.balloon_alert(src, "cannot manifest, died too recently.")
+		return FALSE
+
+/datum/action/ability/xeno_action/manifest_combat/action_activate()
+	xeno_owner.manifest_combat()
 
 /datum/action/ability/activable/xeno/command_minions
 	name = "Command minions"
@@ -110,7 +139,7 @@
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOMORPH_HIVEMIND_TELEPORT,
 	)
-	use_state_flags = ABILITY_USE_SOLIDOBJECT
+	use_state_flags = ABILITY_USE_SOLIDOBJECT|ABILITY_USE_BUSY
 	///Is the map being shown to the player right now?
 	var/showing_map = FALSE
 

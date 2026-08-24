@@ -637,6 +637,12 @@
 	keybind_signal = COMSIG_XENOMORPH_HIVEMIND_CHANGE_FORM
 	hotkey_keys = list("F")
 
+/datum/keybinding/xeno/manifest_combat
+	name = "change_form"
+	full_name = "Hivemind: Manifest Combat Form"
+	description = "Change form to/from combat."
+	keybind_signal = COMSIG_XENOMORPH_HIVEMIND_MANIFEST_COMBAT
+
 /datum/keybinding/xeno/teleport_minimap
 	name = "teleport_minimap"
 	full_name = "Hivemind: Open teleportation minimap"

@@ -261,6 +261,9 @@
 /mob/living/carbon/xenomorph/proc/change_form()
 	return
 
+/mob/living/carbon/xenomorph/proc/manifest_combat()
+	return
+
 /mob/living/carbon/xenomorph/examine(mob/user)
 	. = ..()
 	. += xeno_caste.caste_desc
