@@ -46,7 +46,7 @@
 		KEYBINDING_NORMAL = COMSIG_XENOMORPH_HIVEMIND_MANIFEST_COMBAT,
 	)
 	cooldown_duration = 30 SECONDS
-	use_state_flags = ABILITY_USE_SOLIDOBJECT|ABILITY_USE_BUSY
+	use_state_flags = ABILITY_USE_SOLIDOBJECT
 
 /datum/action/ability/xeno_action/manifest_combat/can_use_action(silent, override_flags, selecting)
 	. = ..()
