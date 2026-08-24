@@ -139,7 +139,7 @@
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOMORPH_HIVEMIND_TELEPORT,
 	)
-	use_state_flags = ABILITY_USE_SOLIDOBJECT|ABILITY_USE_BUSY
+	use_state_flags = ABILITY_USE_SOLIDOBJECT
 	///Is the map being shown to the player right now?
 	var/showing_map = FALSE
 
