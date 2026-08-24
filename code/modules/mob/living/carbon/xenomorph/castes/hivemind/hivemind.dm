@@ -47,15 +47,18 @@
 /mob/living/carbon/xenomorph/hivemind/upgrade_possible()
 	return FALSE
 
+/mob/living/carbon/xenomorph/hivemind/proc/is_combat_form()
+	return upgrade == XENO_UPGRADE_HIVEMIND_COMBAT
+
 /mob/living/carbon/xenomorph/hivemind/upgrade_xeno(newlevel, silent = FALSE)
 	newlevel = XENO_UPGRADE_BASETYPE
 	return ..()
 
 /mob/living/carbon/xenomorph/hivemind/updatehealth()
-	if(on_fire && upgrade != XENO_UPGRADE_HIVEMIND_COMBAT)
+	if(on_fire && !is_combat_form())
 		ExtinguishMob()
 	health = maxHealth - getFireLoss() - getBruteLoss() //Xenos can only take brute and fire damage.
-	if(upgrade == XENO_UPGRADE_HIVEMIND_COMBAT)
+	if(is_combat_form())
 		if(health <= xeno_caste.crit_health)
 			setBruteLoss(0)
 			setFireLoss(-minimum_health)
@@ -71,7 +74,7 @@
 			set_stat(UNCONSCIOUS)
 		else
 			set_stat(CONSCIOUS)
-	else if(health <= 0 && !(status_flags & INCORPOREAL) && upgrade != XENO_UPGRADE_HIVEMIND_COMBAT)
+	else if(health <= 0 && !(status_flags & INCORPOREAL))
 		setBruteLoss(0)
 		setFireLoss(-minimum_health)
 		change_form()
@@ -88,7 +91,7 @@
 	var/turf/T = loc
 	if(!istype(T))
 		return
-	if(upgrade == XENO_UPGRADE_HIVEMIND_COMBAT)
+	if(is_combat_form())
 		if(health < 0)
 			handle_critical_health_updates(seconds_per_tick)
 			return
@@ -128,20 +131,22 @@
 	return_to_core()
 
 /mob/living/carbon/xenomorph/hivemind/set_resting()
-	if(upgrade != XENO_UPGRADE_HIVEMIND_COMBAT)
-		return
-	return ..()
+	if(is_combat_form())
+		return ..()
+	return
 
 /mob/living/carbon/xenomorph/hivemind/proc/cancel_manifestation(datum/source, damage, mob/living/attacker)
 	SIGNAL_HANDLER
 
 	Paralyze(10 SECONDS, TRUE, TRUE)
 
-/mob/living/carbon/xenomorph/hivemind/manifest_combat()
+/mob/living/carbon/xenomorph/hivemind/proc/manifest_combat()
 	if(TIMER_COOLDOWN_RUNNING(src, COOLDOWN_HIVEMIND_MANIFESTATION))
 		balloon_alert(src, "cannot manifest during transformation!")
 		return
-	TIMER_COOLDOWN_START(src, COOLDOWN_HIVEMIND_MANIFESTATION_COMBAT, TIME_TO_TRANSFORM_COMBAT)
+	if(TIMER_COOLDOWN_RUNNING(src, COOLDOWN_HIVEMIND_MANIFESTATION_COMBAT))
+		balloon_alert(src, "died too recently!")
+		return
 	RegisterSignal(src, COMSIG_XENOMORPH_TAKING_DAMAGE, PROC_REF(cancel_manifestation))
 	if(!do_after(src, TIME_TO_TRANSFORM_COMBAT, NONE, src, BUSY_ICON_DANGER))
 		UnregisterSignal(src, COMSIG_XENOMORPH_TAKING_DAMAGE)
@@ -150,15 +155,15 @@
 	if(health < maxHealth)
 		balloon_alert(src, "must be at full health!")
 		return
-	if(upgrade == XENO_UPGRADE_HIVEMIND_COMBAT)
+	if(is_combat_form())
 		flick("Hivemind_materialisation_reverse", src)
 		do_manifest_builder()
 		return
 	flick("Hivemind_materialisation", src)
 	do_manifest_combat()
 
-/mob/living/carbon/xenomorph/hivemind/change_form(forced = FALSE)
-	if(upgrade == XENO_UPGRADE_HIVEMIND_COMBAT && !forced)
+/mob/living/carbon/xenomorph/hivemind/proc/change_form(forced = FALSE)
+	if(is_combat_form() && !forced)
 		return
 	if(status_flags & INCORPOREAL && health != maxHealth)
 		to_chat(src, span_xenowarning("You do not have the strength to manifest yet!"))
@@ -172,8 +177,9 @@
 	addtimer(CALLBACK(src, PROC_REF(do_change_form)), TIME_TO_TRANSFORM)
 
 /mob/living/carbon/xenomorph/hivemind/set_jump_component(duration = 0.5 SECONDS, cooldown = 2 SECONDS, cost = 0, height = 16, sound = null, flags = JUMP_SHADOW, jump_pass_flags = PASS_LOW_STRUCTURE|PASS_FIRE|PASS_TANK)
-	if(upgrade != XENO_UPGRADE_HIVEMIND_COMBAT)
-		return //no jumping, bad hivemind
+	if(is_combat_form())
+		return ..()
+	return //no jumping, bad hivemind
 
 /mob/living/carbon/xenomorph/hivemind/proc/do_manifest_builder()
 	LAZYCLEARLIST(movespeed_modification)
@@ -243,20 +249,18 @@
 	handle_weeds_adjacent_removed()
 
 /mob/living/carbon/xenomorph/hivemind/fire_act(burn_level)
-	if(upgrade != XENO_UPGRADE_HIVEMIND_COMBAT)
-		return_to_core()
-		to_chat(src, span_xenonotice("We were on top of fire, we got moved to our core."))
-		return
-	return ..()
+	if(is_combat_form())
+		return ..()
+	return_to_core()
+	to_chat(src, span_xenonotice("We were on top of fire, we got moved to our core."))
 
 /mob/living/carbon/xenomorph/hivemind/handle_weeds_adjacent_removed()
-	if(upgrade == XENO_UPGRADE_HIVEMIND_COMBAT)
+	if(is_combat_form())
 		return
 	if(loc_weeds_type || check_weeds(get_turf(src)))
 		return
 	return_to_core()
 	to_chat(src, span_xenonotice("We had no weeds nearby, we got moved to our core."))
-	return
 
 /mob/living/carbon/xenomorph/hivemind/proc/return_to_core()
 	if(!(status_flags & INCORPOREAL) && TIMER_COOLDOWN_FINISHED(src, COOLDOWN_HIVEMIND_MANIFESTATION))
@@ -385,6 +389,8 @@
 /mob/living/carbon/xenomorph/hivemind/DblClickOn(atom/A, params)
 	if(TIMER_COOLDOWN_RUNNING(src, COOLDOWN_HIVEMIND_MANIFESTATION))
 		return
+	if(is_combat_form())
+		return
 	var/list/modifiers = params2list(params)
 	if(modifiers["right"])
 		return
@@ -392,8 +398,6 @@
 	if(!check_weeds(target_turf, TRUE))
 		return
 	if(!(status_flags & INCORPOREAL))
-		if(upgrade == XENO_UPGRADE_HIVEMIND_COMBAT)
-			return
 		start_teleport(target_turf)
 		return
 	abstract_move(target_turf)
@@ -409,7 +413,7 @@
 	return FALSE
 
 /mob/living/carbon/xenomorph/hivemind/a_intent_change()
-	if(upgrade == XENO_UPGRADE_HIVEMIND_COMBAT)
+	if(is_combat_form())
 		return ..()
 	return //Unable to change intent, forced help intent
 
@@ -423,7 +427,7 @@
 /obj/fire/flamer/CanAllowThrough(atom/movable/mover, turf/target)
 	if(isxenohivemind(mover))
 		var/mob/living/carbon/xenomorph/hivemind/hivemind = mover
-		if(hivemind.xeno_caste.upgrade != XENO_UPGRADE_HIVEMIND_COMBAT)
+		if(!hivemind.is_combat_form())
 			return FALSE
 	return ..()
 

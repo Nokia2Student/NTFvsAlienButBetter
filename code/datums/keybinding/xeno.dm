@@ -630,6 +630,12 @@
 	description = "Pick what type of plant to sow."
 	keybind_signal = COMSIG_XENOABILITY_CHOOSE_PLANT
 
+/datum/keybinding/xeno/return_to_core
+	name = "return_to_core"
+	full_name = "Hivemind: Return To Core"
+	description = "Move back to the core."
+	keybind_signal = COMSIG_XENOMORPH_CORE_RETURN
+
 /datum/keybinding/xeno/change_form
 	name = "change_form"
 	full_name = "Hivemind: Change Form"
@@ -638,7 +644,7 @@
 	hotkey_keys = list("F")
 
 /datum/keybinding/xeno/manifest_combat
-	name = "change_form"
+	name = "manifest_combat"
 	full_name = "Hivemind: Manifest Combat Form"
 	description = "Change form to/from combat."
 	keybind_signal = COMSIG_XENOMORPH_HIVEMIND_MANIFEST_COMBAT

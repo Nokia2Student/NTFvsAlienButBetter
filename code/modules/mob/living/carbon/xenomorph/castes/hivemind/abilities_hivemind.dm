@@ -3,18 +3,21 @@
 	action_icon_state = "lay_hivemind"
 	action_icon = 'icons/Xeno/actions/hivemind.dmi'
 	desc = "Teleport back to your core."
+	keybinding_signals = list(
+		KEYBINDING_NORMAL = COMSIG_XENOMORPH_CORE_RETURN,
+	)
 	use_state_flags = ABILITY_USE_SOLIDOBJECT
 
 /datum/action/ability/activable/xeno/secrete_resin/hivemind/can_use_action(silent, override_flags, selecting)
 	. = ..()
 	if(!.)
 		return
-	if (owner.status_flags & INCORPOREAL)
+	if(owner.status_flags & INCORPOREAL)
 		return FALSE
 
 /datum/action/ability/xeno_action/return_to_core/action_activate()
-	. = ..()
-	SEND_SIGNAL(owner, COMSIG_XENOMORPH_CORE_RETURN)
+	var/mob/living/carbon/xenomorph/hivemind/hivemind = xeno_owner
+	hivemind.return_to_core()
 
 /datum/action/ability/xeno_action/change_form
 	name = "Change form"
@@ -26,16 +29,9 @@
 	)
 	use_state_flags = ABILITY_USE_SOLIDOBJECT
 
-/datum/action/ability/xeno_action/change_form/can_use_action(silent, override_flags, selecting)
-	. = ..()
-	if(!.)
-		return FALSE
-
 /datum/action/ability/xeno_action/change_form/action_activate()
-	. = ..()
-	if(xeno_owner.do_actions)
-		return FALSE
-	xeno_owner.change_form()
+	var/mob/living/carbon/xenomorph/hivemind/hivemind = xeno_owner
+	hivemind.change_form()
 
 /datum/action/ability/xeno_action/manifest_combat
 	name = "Manifest combat form"
@@ -45,18 +41,11 @@
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOMORPH_HIVEMIND_MANIFEST_COMBAT,
 	)
-	cooldown_duration = 30 SECONDS
 	use_state_flags = ABILITY_USE_SOLIDOBJECT
 
-/datum/action/ability/xeno_action/manifest_combat/can_use_action(silent, override_flags, selecting)
-	. = ..()
-	if(TIMER_COOLDOWN_RUNNING(xeno_owner, COOLDOWN_HIVEMIND_MANIFESTATION_COMBAT))
-		if(!silent)
-			xeno_owner.balloon_alert(src, "cannot manifest, died too recently.")
-		return FALSE
-
 /datum/action/ability/xeno_action/manifest_combat/action_activate()
-	xeno_owner.manifest_combat()
+	var/mob/living/carbon/xenomorph/hivemind/hivemind = xeno_owner
+	hivemind.manifest_combat()
 
 /datum/action/ability/activable/xeno/command_minions
 	name = "Command minions"
