@@ -179,7 +179,7 @@
 /mob/living/carbon/xenomorph/hivemind/set_jump_component(duration = 0.5 SECONDS, cooldown = 2 SECONDS, cost = 0, height = 16, sound = null, flags = JUMP_SHADOW, jump_pass_flags = PASS_LOW_STRUCTURE|PASS_FIRE|PASS_TANK)
 	if(is_combat_form())
 		return ..()
-	return //no jumping, bad hivemind
+	remove_component(/datum/component/jump)
 
 /mob/living/carbon/xenomorph/hivemind/proc/do_manifest_builder()
 	LAZYCLEARLIST(movespeed_modification)
