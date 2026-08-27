@@ -61,9 +61,15 @@
 	)
 
 /datum/xeno_caste/hivemind/on_caste_applied(mob/xenomorph)
+	var/mob/living/carbon/xenomorph/hivemind/hivemind = xenomorph
+	if(hivemind.is_combat_form())
+		return ..()
 	return
 
 /datum/xeno_caste/hivemind/on_caste_removed(mob/xenomorph)
+	var/mob/living/carbon/xenomorph/hivemind/hivemind = xenomorph
+	if(hivemind.is_combat_form())
+		return ..()
 	return
 
 /datum/xeno_caste/hivemind/hivemind_manifestation
@@ -100,6 +106,8 @@
 		/datum/action/ability/xeno_action/pheromones/emit_warding,
 		/datum/action/ability/xeno_action/pheromones/emit_frenzy,
 		/datum/action/ability/activable/xeno/secrete_resin/hivemind,
+		/datum/action/ability/activable/xeno/corrosive_acid/hivemind,
+		/datum/action/ability/xeno_action/place_acidwell,
 		/datum/action/ability/activable/psionic_interact,
 		/datum/action/ability/activable/xeno/shoot_xeno_artillery,
 		/datum/action/ability/xeno_action/place_stew_pod,
@@ -107,6 +115,7 @@
 		/datum/action/ability/activable/xeno/creation/beetle,
 		/datum/action/ability/activable/xeno/creation/mantis,
 		/datum/action/ability/activable/xeno/creation/scorpion,
+		/datum/action/ability/activable/xeno/recycle,
 	)
 
 /datum/xeno_caste/hivemind/hivemind_combat
@@ -148,6 +157,7 @@
 		/datum/action/ability/activable/xeno/psydrain,
 		/datum/action/ability/activable/xeno/devour,
 		/datum/action/ability/activable/xeno/cocoon,
+		/datum/action/ability/activable/xeno/tail_stab,
 		/datum/action/ability/activable/xeno/impregnate,
 		/datum/action/ability/activable/xeno/larval_growth_sting,
 		/datum/action/ability/activable/xeno/psychic_cure/queen_give_heal/hivemind,
@@ -162,4 +172,5 @@
 		/datum/action/ability/activable/xeno/shoot_xeno_artillery,
 		/datum/action/ability/xeno_action/place_stew_pod,
 		/datum/action/ability/xeno_action/blessing_menu,
+		/datum/action/ability/activable/xeno/recycle,
 	)

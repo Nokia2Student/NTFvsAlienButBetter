@@ -1,5 +1,5 @@
 #define TIME_TO_TRANSFORM 1.6 SECONDS
-#define TIME_TO_TRANSFORM_COMBAT 30 SECONDS
+#define TIME_TO_TRANSFORM_COMBAT 10 SECONDS
 #define HIVEMIND_COMBAT_DEATH_COOLDOWN 3 MINUTES
 
 /mob/living/carbon/xenomorph/hivemind
@@ -251,6 +251,9 @@
 	update_icon()
 	update_action_buttons()
 	handle_weeds_adjacent_removed()
+	if(eaten_mob)
+		eaten_mob.handle_unhaul()
+		eject_victim()
 
 /mob/living/carbon/xenomorph/hivemind/fire_act(burn_level)
 	if(is_combat_form())
@@ -377,18 +380,13 @@
 	return ..()
 
 /mob/living/carbon/xenomorph/hivemind/med_hud_set_health()
+	. = ..()
 	var/image/holder = hud_list[HEALTH_HUD_XENO]
 	if(!holder)
 		return
-
-	var/amount = round(health * 100 / maxHealth, 10)
-	if(!amount)
-		amount = 1 //don't want the 'zero health' icon when we still have 4% of our health
-	holder.icon_state = "health[amount]"
-
 	holder.overlays.Cut()
 	if(status_flags & INCORPOREAL)
-		holder.overlays +=image('icons/Xeno/castes/hivemind.dmi', src, "hivemind_marker")
+		holder.overlays += image('icons/Xeno/castes/hivemind.dmi', src, "hivemind_marker")
 
 /mob/living/carbon/xenomorph/hivemind/DblClickOn(atom/A, params)
 	if(TIMER_COOLDOWN_RUNNING(src, COOLDOWN_HIVEMIND_MANIFESTATION))

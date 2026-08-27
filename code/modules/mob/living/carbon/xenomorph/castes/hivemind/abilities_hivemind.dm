@@ -218,3 +218,15 @@
 		return
 	xeno_owner.balloon_alert(xeno_owner, "artillery selected")
 	update_button_icon()
+
+/datum/action/ability/activable/xeno/corrosive_acid/hivemind
+	desc = "Cover an object with acid to slowly melt it. Takes more time than usual."
+	ability_cost = 200
+	acid_type = /obj/effect/xenomorph/acid/weak
+	acid_speed_multiplier = 2
+
+/datum/action/ability/activable/xeno/tail_stab/hivemind
+	name = "Tentacle Stab"
+	desc = "Strike a target within two tiles with a sharp tentacle for armor-piercing damage, stagger and slowdown. Deals more AP, damage, stagger and slowdown to grappled targets, structures and machinery."
+	stab_description = "swift tentacle-jab!"
+	limb_name = "tentacle"
