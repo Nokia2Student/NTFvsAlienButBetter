@@ -230,3 +230,68 @@
 	desc = "Strike a target within two tiles with a sharp tentacle for armor-piercing damage, stagger and slowdown. Deals more AP, damage, stagger and slowdown to grappled targets, structures and machinery."
 	stab_description = "swift tentacle-jab!"
 	limb_name = "tentacle"
+
+/datum/action/ability/xeno_action/psychic_scan
+	name = "Psychic Scan"
+	action_icon_state = "toggle_queen_zoom"
+	action_icon = 'icons/Xeno/actions/queen.dmi'
+	desc = "Send out a psychic pulse that reveals all living beings on the weeds."
+	use_state_flags = ABILITY_USE_SOLIDOBJECT
+	cooldown_duration = 2 MINUTES
+
+/datum/action/ability/xeno_action/psychic_scan/can_use_action(silent, override_flags, selecting)
+	. = ..()
+	if(!.)
+		return
+	if(!(xeno_owner.status_flags & INCORPOREAL))
+		if(!silent)
+			xeno_owner.balloon_alert(xeno_owner, "must be incorporeal!")
+		return FALSE
+
+/datum/action/ability/xeno_action/psychic_scan/action_activate()
+	succeed_activate()
+	add_cooldown()
+	xeno_owner.visible_message(xeno_owner, span_danger("[xeno_owner] unleashes a psychic pulse!"))
+	do_scan()
+	addtimer(CALLBACK(src, PROC_REF(do_scan)), 2 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(do_scan)), 4 SECONDS)
+
+/datum/action/ability/xeno_action/psychic_scan/proc/do_scan()
+	if(QDELETED(xeno_owner))
+		return
+
+	var/mob/living/carbon/xenomorph/hivemind/hivemind = xeno_owner
+	var/hivenumber = hivemind.get_xeno_hivenumber()
+	var/minimap_flag = GLOB.hivenumber_to_minimap_flag[hivenumber]
+	var/turf/source_turf = get_turf(xeno_owner)
+
+	for(var/mob/living/carbon/xenomorph/allied_xeno AS in GLOB.hive_datums[hivenumber].xenos_by_zlevel["[source_turf.z]"])
+		if(!allied_xeno.client)
+			continue
+		if(allied_xeno.stat == DEAD)
+			continue
+		allied_xeno.playsound_local(allied_xeno, 'ntf_modular/sound/items/detector_ping_1.ogg', 30, TRUE)
+
+	for(var/mob/living/carbon/human/enemy_human AS in GLOB.humans_by_zlevel["[source_turf.z]"])
+		if(isnull(enemy_human))
+			continue
+		if(enemy_human.z != source_turf.z)
+			continue
+		var/obj/alien/weeds/found_weeds = locate(/obj/alien/weeds) in get_turf(enemy_human)
+		if(!found_weeds)
+			continue
+		if(found_weeds.hivenumber != hivenumber)
+			continue
+		new /obj/effect/temp_visual/minimap_blip(get_turf(enemy_human), minimap_flag)
+
+	for(var/mob/living/carbon/xenomorph/enemy_xeno AS in GLOB.xeno_mob_list)
+		if(enemy_xeno.z != source_turf.z)
+			continue
+		if(enemy_xeno.get_xeno_hivenumber() == hivenumber)
+			continue
+		var/obj/alien/weeds/found_weeds = locate(/obj/alien/weeds) in get_turf(enemy_xeno)
+		if(!found_weeds)
+			continue
+		if(found_weeds.hivenumber != hivenumber)
+			continue
+		new /obj/effect/temp_visual/minimap_blip(get_turf(enemy_xeno), minimap_flag)

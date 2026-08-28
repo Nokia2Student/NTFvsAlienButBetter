@@ -57,6 +57,7 @@
 		/datum/action/ability/xeno_action/pheromones/emit_frenzy,
 		/datum/action/ability/activable/psionic_interact,
 		/datum/action/ability/activable/xeno/shoot_xeno_artillery,
+		/datum/action/ability/xeno_action/psychic_scan,
 		/datum/action/ability/activable/xeno/possession,
 	)
 
@@ -157,7 +158,7 @@
 		/datum/action/ability/activable/xeno/psydrain,
 		/datum/action/ability/activable/xeno/devour,
 		/datum/action/ability/activable/xeno/cocoon,
-		/datum/action/ability/activable/xeno/tail_stab,
+		/datum/action/ability/activable/xeno/tail_stab/hivemind,
 		/datum/action/ability/activable/xeno/impregnate,
 		/datum/action/ability/activable/xeno/larval_growth_sting,
 		/datum/action/ability/activable/xeno/psychic_cure/queen_give_heal/hivemind,

@@ -35,6 +35,8 @@
 	var/incorporeal_pass_flags = PASS_LOW_STRUCTURE|PASS_THROW|PASS_PROJECTILE|PASS_AIR|PASS_FIRE
 	///pass_flags given when manifested
 	var/manifest_pass_flags = PASS_LOW_STRUCTURE|PASS_MOB|PASS_XENO
+	///list of cooldowns to share through forms
+	var/list/saved_ability_cooldowns = list()
 
 /mob/living/carbon/xenomorph/hivemind/Initialize(mapload, do_not_set_as_ruler, _hivenumber)
 	var/obj/structure/xeno/hivemindcore/new_core = new /obj/structure/xeno/hivemindcore(loc, hivenumber)
@@ -414,11 +416,6 @@
 		return ..()
 	return FALSE
 
-/mob/living/carbon/xenomorph/hivemind/a_intent_change()
-	if(is_combat_form())
-		return ..()
-	return //Unable to change intent, forced help intent
-
 /// Hiveminds specifically have no status hud element
 /mob/living/carbon/xenomorph/hivemind/med_hud_set_status()
 	return
@@ -437,15 +434,22 @@
 /mob/living/carbon/xenomorph/hivemind/proc/get_core()
 	return core?.resolve()
 
+
+
 /mob/living/carbon/xenomorph/hivemind/proc/sync_hivemind_abilities()
-	for(var/datum/action/ability/xeno_action/action_to_remove AS in mob_abilities)
-		action_to_remove.remove_action(src)
+	for(var/datum/action/ability/action AS in mob_abilities)
+		if(action.cooldown_timer)
+			saved_ability_cooldowns[action.type] = timeleft(action.cooldown_timer)
+		action.remove_action(src)
 
 	mob_abilities = list()
 	for(var/allowed_action_path in xeno_caste.actions)
 		var/datum/action/ability/xeno_action/action = new allowed_action_path()
 		if(!SSticker.mode || (SSticker.mode.xeno_abilities_flags & action.gamemode_flags))
 			action.give_action(src)
+			if(saved_ability_cooldowns[action.type])
+				action.add_cooldown(saved_ability_cooldowns[action.type])
+				saved_ability_cooldowns -= action.type
 
 // =================
 // hivemind core
