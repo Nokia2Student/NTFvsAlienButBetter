@@ -437,7 +437,7 @@
 
 
 /mob/living/carbon/xenomorph/hivemind/proc/sync_hivemind_abilities()
-	for(var/datum/action/ability/action AS in mob_abilities)
+	for(var/datum/action/ability/xeno_action/action AS in mob_abilities)
 		if(action.cooldown_timer)
 			saved_ability_cooldowns[action.type] = timeleft(action.cooldown_timer)
 		action.remove_action(src)

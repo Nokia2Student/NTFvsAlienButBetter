@@ -277,6 +277,8 @@
 			continue
 		if(enemy_human.z != source_turf.z)
 			continue
+		if(enemy_human.get_xeno_hivenumber() == hivenumber)
+			continue
 		var/obj/alien/weeds/found_weeds = locate(/obj/alien/weeds) in get_turf(enemy_human)
 		if(!found_weeds)
 			continue
